@@ -622,6 +622,45 @@ def example_slalom(duration: float = 18.0, dt: float = 0.05) -> pd.DataFrame:
     return pd.DataFrame({'t': t, 'v': v, 'delta': delta})
 
 
+def example_circle(radius: float = 50.0, v: float = 2.0, 
+                   dt: float = 0.1, n_circles: float = 1.0) -> pd.DataFrame:
+    """
+    Generate circular path trajectory for unicycle model.
+    
+    Parameters
+    ----------
+    radius : float, optional
+        Circle radius [m] (default: 50.0)
+    v : float, optional
+        Forward speed [m/s] (default: 2.0)
+    dt : float, optional
+        Time step [s] (default: 0.1)
+    n_circles : float, optional
+        Number of circles to complete (default: 1.0)
+    
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with columns: t, v, yaw_rate
+    """
+    # For circular motion: yaw_rate = v / radius
+    yaw_rate = v / radius
+    
+    # Calculate duration to complete n_circles
+    # Full circle is 2*pi radians
+    duration = n_circles * 2 * np.pi / yaw_rate
+    
+    # Generate time array
+    t = np.arange(0, duration, dt)
+    N = len(t)
+    
+    # Constant speed and yaw rate
+    v_arr = np.full(N, v)
+    yaw_rate_arr = np.full(N, yaw_rate)
+    
+    return pd.DataFrame({'t': t, 'v': v_arr, 'yaw_rate': yaw_rate_arr})
+
+
 # ============================================================================
 # Command Line Interface
 # ============================================================================
