@@ -404,6 +404,42 @@ class TestExampleGenerators:
         
         assert len(df) == 240  # 12.0 / 0.05
         assert df['t'].iloc[0] == 0.0
+    
+    def test_example_circle(self):
+        """Test circle example generator."""
+        # Test default 50m radius circle
+        df = vp.example_circle(radius=50.0, v=2.0, dt=0.1, n_circles=1.0)
+        
+        assert 't' in df.columns
+        assert 'v' in df.columns
+        assert 'yaw_rate' in df.columns
+        
+        # Check that speed is constant
+        np.testing.assert_allclose(df['v'].values, 2.0)
+        
+        # Check that yaw_rate is constant and equals v/radius
+        expected_yaw_rate = 2.0 / 50.0
+        np.testing.assert_allclose(df['yaw_rate'].values, expected_yaw_rate)
+        
+        # Simulate and verify radius
+        path = vp.simulate_from_dataframe_unicycle(df, init=vp.Pose(0, 0, 0))
+        
+        # For a circle starting at (0,0) with yaw=0, center is at (0, radius)
+        center_x = 0.0
+        center_y = 50.0
+        distances = np.sqrt((path.x - center_x)**2 + (path.y - center_y)**2)
+        
+        # Check that all points are approximately at radius distance from center
+        np.testing.assert_allclose(distances, 50.0, rtol=1e-3)
+    
+    def test_example_circle_custom_radius(self):
+        """Test circle with custom radius."""
+        radius = 100.0
+        df = vp.example_circle(radius=radius, v=3.0, dt=0.1, n_circles=0.5)
+        
+        # Check yaw_rate calculation
+        expected_yaw_rate = 3.0 / radius
+        np.testing.assert_allclose(df['yaw_rate'].values, expected_yaw_rate)
 
 
 class TestErrorHandling:
