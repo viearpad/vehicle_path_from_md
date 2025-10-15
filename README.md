@@ -124,6 +124,23 @@ path = vp.simulate_from_dataframe_bicycle(df, L=2.8, init=vp.Pose(0, 0, 0),
 vp.plot_path(path, pose_stride=50, title="Bicycle model (v, δ) with noise")
 ```
 
+### Circular path (50m radius example)
+```python
+import vehicle_path as vp
+
+# Generate a circular path with 50m radius
+df = vp.example_circle(radius=50.0, v=2.0, dt=0.1, n_circles=1.0)
+
+# Simulate and plot
+path = vp.simulate_from_dataframe_unicycle(df, init=vp.Pose(0, 0, 0))
+vp.plot_path(path, pose_stride=150, title="50m Radius Circle Path")
+```
+
+Or use the pre-generated CSV:
+```bash
+python vehicle_path.py --model unicycle --input example_circle_50m.csv --pose-stride 150
+```
+
 ---
 
 ## Data Models
@@ -197,6 +214,13 @@ x, y = lla_to_enu(lat_deg, lon_deg, lat0_deg, lon0_deg)
 ```
 > Small-area equirectangular approximation.
 
+### Example Generators
+```python
+example_s_curve(duration=15.0, dt=0.05) -> pd.DataFrame       # S-curve for unicycle
+example_slalom(duration=18.0, dt=0.05) -> pd.DataFrame        # Slalom for bicycle
+example_circle(radius=50.0, v=2.0, dt=0.1, n_circles=1.0) -> pd.DataFrame  # Circular path for unicycle
+```
+
 ---
 
 ## CSV Formats
@@ -239,6 +263,9 @@ python vehicle_path.py --model unicycle --duration 15 --dt 0.05 --pose-stride 40
 
 # Bicycle from CSV
 python vehicle_path.py --model bicycle --wheelbase 2.8 --input inputs.csv --pose-stride 25
+
+# 50m radius circle path from example CSV
+python vehicle_path.py --model unicycle --input example_circle_50m.csv --pose-stride 150
 ```
 
 ---
